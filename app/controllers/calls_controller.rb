@@ -26,9 +26,9 @@ class CallsController < ApplicationController
 	end
 
 	def voicemails
-		@call = Call.find_or_initialize_by(sid: params['CallSid'])
-		@call.record_url = params['RecordingUrl']
-		@call.save!
+		call = Call.find_or_initialize_by(sid: params['CallSid'])
+		call.record_url = params['RecordingUrl']
+		call.save!
 		head :ok
 	end
 
@@ -55,10 +55,10 @@ class CallsController < ApplicationController
 			r.dial do |dial|
 				dial.number('+33770029132', 
 					status_callback_event: 'initiated ringing answered completed',
-					status_callback: url_for('/calls/events'),
+					status_callback: calls_events_url,
 					status_callback_method: 'POST')
 			end
-			r.say "L'appel est terminé. Au revoir.", language: 'fr-FR'
+			r.say 'L\'appel est terminé. Au revoir.', language: 'fr-FR'
 			r.hangup
 		end.to_s
     end
@@ -66,9 +66,9 @@ class CallsController < ApplicationController
     def leave_a_voicemail_message
 		Twilio::TwiML::VoiceResponse.new do |r|
     		r.say 'Merci de laisser un message après le bip sonore.', language: 'fr-FR'
-			r.record(action: url_for('/calls/voicemail_recorded'),
+			r.record(action: calls_voicemail_recorded_url,
 				method: 'POST',
-				recording_status_callback: url_for('/calls/voicemails'),
+				recording_status_callback: calls_voicemails_url,
 				recording_status_callback_method: 'POST')
 			r.say 'Aucun message enregistré', language: 'fr-FR'
 		end.to_s
