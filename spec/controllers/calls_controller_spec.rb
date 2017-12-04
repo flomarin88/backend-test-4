@@ -58,7 +58,7 @@ RSpec.describe CallsController, :type => :controller do
 		expect(Call.all.length).to eq(1)
 	end
 
-	it "should save recorded voicemail" do
+	it "should save recorded voicemail when call exists" do
 		# Given
 		Call.create(sid: '12341AD24', from: '0123456789', to: '0987654321', status: 'in-progress')
 
@@ -73,6 +73,18 @@ RSpec.describe CallsController, :type => :controller do
 		calls = Call.all
 		expect(calls.length).to eq(1)
 		expect(calls[0].record_url).to eq('http://myrecord.avi')
+	end
+
+	it "should return 404 when call does not exists" do
+		# Given
+		# When
+		post :voicemails, params: { 
+			'CallSid' =>'12341AD24',
+			'RecordingUrl' =>'http://myrecord.avi'
+		}
+
+		# Then
+		expect(response.status).to eq(404)
 	end
 
 end

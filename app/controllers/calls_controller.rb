@@ -19,16 +19,20 @@ class CallsController < ApplicationController
 		render xml: message
 	end
 
-	def events
+	def status
 		Call.create_or_update(params)
 		head :no_content
 	end
 
 	def voicemails
 		call = Call.find_by(sid: params['CallSid'])
-		call.record_url = params['RecordingUrl']
-		call.save!
-		head :ok
+		if !call
+			head :not_found		
+		else
+			call.record_url = params['RecordingUrl']
+			call.save!
+			head :ok
+		end
 	end
 
     def voicemail_recorded
@@ -54,7 +58,7 @@ class CallsController < ApplicationController
 			r.dial do |dial|
 				dial.number('+33770029132', 
 					status_callback_event: 'initiated ringing answered completed',
-					status_callback: calls_events_url,
+					status_callback: calls_status_url,
 					status_callback_method: 'POST')
 			end
 			r.say 'L\'appel est terminé. Au revoir.', language: 'fr-FR'
