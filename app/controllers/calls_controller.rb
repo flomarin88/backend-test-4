@@ -25,7 +25,7 @@ class CallsController < ApplicationController
 	end
 
 	def voicemails
-		call = Call.find_or_initialize_by(sid: params['CallSid'])
+		call = Call.find_by(sid: params['CallSid'])
 		call.record_url = params['RecordingUrl']
 		call.save!
 		head :ok
