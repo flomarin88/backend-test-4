@@ -8,7 +8,6 @@ class CallsController < ApplicationController
 
 	def create
 		Call.create_or_update(params)
-		message = nil
 		case params['Digits']
         when '1'
     		message = forward_call_message
