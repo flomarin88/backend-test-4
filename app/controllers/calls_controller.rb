@@ -25,15 +25,15 @@ class CallsController < ApplicationController
 	end
 
 	def voicemails
-		call = Call.find_by(sid: params['CallSid'])
-		if !call
-			head :not_found		
-		else
-			call.record_url = params['RecordingUrl']
-			call.save!
-			head :ok
-		end
-	end
+        call = Call.find_by(sid: params['CallSid'])
+        if !call
+            head :not_found
+        else
+            call.record_url = params['RecordingUrl']
+        	call.save!
+        	head :ok
+        end
+    end
 
     def voicemail_recorded
     	response = Twilio::TwiML::VoiceResponse.new do |r|
